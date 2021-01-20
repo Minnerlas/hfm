@@ -73,6 +73,18 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	int ansi_term = 0;
+	size_t term_width = 0;
+	{
+
+		char *t = getenv("TERM");
+		if (t && *t && strcmp(t, "dumb"))
+			ansi_term = 1;
+		if (ansi_term)
+			term_width = get_term_size().w;
+	}
+	// printf("TERM: %s\t%lu\n", ansi_term ? "ansi" : "dumb", term_width);
+
 	if (!extract) {
 		/* COMPRESS */
 		if (!ulaz)
@@ -103,19 +115,6 @@ int main(int argc, char **argv) {
 
 		if (!iz)
 			perror("Can't open output file"), fclose(ul), exit(1);
-
-
-		int ansi_term = 0;
-		size_t term_width = 0;
-		{
-
-			char *t = getenv("TERM");
-			if (t && *t && strcmp(t, "dumb"))
-				ansi_term = 1;
-			if (ansi_term)
-				term_width = get_term_size().w;
-		}
-		// printf("TERM: %s\t%lu\n", ansi_term ? "ansi" : "dumb", term_width);
 
 		/* CITANJE */
 		{
@@ -172,8 +171,8 @@ int main(int argc, char **argv) {
 			for (int i = 0; i < MAX_U8; i++) {
 				clanovi[i] = (struct clan){
 					.tezina = pbytes[i]->tezina,
-						.tip    = LIST,
-						.u.bajt = pbytes[i]->bajt,
+					.tip    = LIST,
+					.u.bajt = pbytes[i]->bajt,
 				};
 				red_bajtova[i] = &clanovi[i];
 			}
@@ -186,9 +185,9 @@ int main(int argc, char **argv) {
 				struct clan *t3 = &bajtovi[aloc++];
 				*t3 = (struct clan){
 					.tezina = t1->tezina + t2->tezina,
-						.tip    = CVOR,
-						.u.p.l  = t1,
-						.u.p.d  = t2,
+					.tip    = CVOR,
+					.u.p.l  = t1,
+					.u.p.d  = t2,
 				};
 				red_bajtova[++poc] = t3;
 				bubble_sort((void**)(red_bajtova+poc), kraj-poc, f_clan);
@@ -357,8 +356,8 @@ int main(int argc, char **argv) {
 			for (int i = 0; i < MAX_U8; i++) {
 				clanovi[i] = (struct clan){
 					.tezina = pbytes[i]->tezina,
-						.tip    = LIST,
-						.u.bajt = pbytes[i]->bajt,
+					.tip    = LIST,
+					.u.bajt = pbytes[i]->bajt,
 				};
 				red_bajtova[i] = &clanovi[i];
 			}
@@ -371,9 +370,9 @@ int main(int argc, char **argv) {
 				struct clan *t3 = &bajtovi[aloc++];
 				*t3 = (struct clan){
 					.tezina = t1->tezina + t2->tezina,
-						.tip    = CVOR,
-						.u.p.l  = t1,
-						.u.p.d  = t2,
+					.tip    = CVOR,
+					.u.p.l  = t1,
+					.u.p.d  = t2,
 				};
 				red_bajtova[++poc] = t3;
 				bubble_sort((void**)(red_bajtova+poc), kraj-poc, f_clan);
@@ -386,6 +385,7 @@ int main(int argc, char **argv) {
 			   */
 
 			stablo_u_tabelu(&kodovi[0], red_bajtova[kraj-1]);
+			struct clan *koren = red_bajtova[kraj-1];
 
 			/* VERBOSE PRINTING */
 			// size_t ukup = 0;
@@ -407,18 +407,49 @@ int main(int argc, char **argv) {
 			}
 
 			/* DESIFROVANJE FAJLA */
-			/*
-			size_t napisano = 0;
-			int buf_size = 0;
-			uint8_t buf = 0;
-			while (napisano++ < isize) {
-				if (!buf_size)
-					if (!fread(&buf, 1, 1, ul))
-						perror("Couldn't read from input file"), 
-							fclose(ul), fclose(iz), exit(1);
+			{
+				size_t napisano = 0;
+				int buf_size = 0;
+				uint8_t buf = 0;
+				int progress = 0;
+				struct clan *t = koren;
+				while (napisano < isize) {
+					if (!buf_size) {
+						if (!fread(&buf, 1, 1, ul))
+							perror("Couldn't read from input file"), 
+								fclose(ul), fclose(iz), exit(1);
+						buf_size = 8;
+					}
+					if (buf & (1 << (--buf_size)))
+						t = t->u.p.d;
+					else
+						t = t->u.p.l;
 
+					if (t->tip == LIST) {
+						if (!fwrite(&t->u.bajt, 1, 1, iz))
+							perror("Couldn't write to the output file"), 
+								fclose(ul), fclose(iz), exit(1);
+
+						napisano++;
+						t = koren;
+					}
+
+					float t = napisano*1./isize;
+					if ((isize > (1<<17)) 
+						   && (progress - (int)(map(t, 0, 1, 0, 100)))) {
+						progress = map(t, 0, 1, 0, 100);
+						if (ansi_term) {
+							progress_bar("Progress:", progress, term_width);
+							// progress_bar(ulaz, progress, term_width);
+							fflush(stdout);
+						} else {
+							if (progress % 10 == 0)
+								printf("Progress: % 3d%%\n", progress);
+						}
+					}
+				}
 			}
-			*/
+
 
 			fclose(iz);
 			fclose(ul);
