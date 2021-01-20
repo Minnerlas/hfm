@@ -413,6 +413,8 @@ int main(int argc, char **argv) {
 				uint8_t buf = 0;
 				int progress = 0;
 				struct clan *t = koren;
+				if (ansi_term)
+					printf("\x1b[?25l");
 				while (napisano < isize) {
 					if (!buf_size) {
 						if (!fread(&buf, 1, 1, ul))
@@ -448,6 +450,8 @@ int main(int argc, char **argv) {
 						}
 					}
 				}
+				if (ansi_term)
+					printf("\x1b[?25h");
 			}
 
 
