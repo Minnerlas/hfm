@@ -2,3 +2,4 @@ test*
 hfm
 bin/*
 *.hfm
+fifo*
