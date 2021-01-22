@@ -21,7 +21,7 @@ int stablo_u_tabelu(struct kod *kodovi, struct clan *koren) {
 	return _stablo_u_tabelu(kodovi, koren, 0, 0);
 }
 
-int hfm_cheak_header(struct hfm_header *h) {
+int hfm_check_header(struct hfm_header *h) {
 	return (h->magic[0] == HFM_MAGIC0)
 		&& (h->magic[1] == HFM_MAGIC1)
 		&& (h->magic[2] == HFM_MAGIC2)

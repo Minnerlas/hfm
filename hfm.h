@@ -50,6 +50,6 @@ struct hfm_header {
 };
 
 int stablo_u_tabelu(struct kod *kodovi, struct clan *koren);
-int hfm_cheak_header(struct hfm_header *h);
+int hfm_check_header(struct hfm_header *h);
 
 #endif /* HFM_H */
