@@ -45,6 +45,10 @@ int main(int argc, char **argv) {
 	// char *izlaz = NULL;
 	int verbose = 0;
 	int extract = 0;
+	if (argc == 1) {
+		printf(help_txt);
+		exit(0);
+	}
 	for (int i = 1; i < argc; i++) {
 		// printf("%s\n", argv[i]);
 		if (argv[i][0] == '-') {
@@ -475,6 +479,12 @@ int main(int argc, char **argv) {
 		}
 
 		fclose(iz);
+
+		if (!getuid() && chown(h.name, uid, gid))
+			perror(NULL), fclose(ul), exit(1);
+		if (chmod(h.name, mode) < 0)
+			fprintf(stderr, "fchmod %s:", h.name), perror(NULL);
+
 		fclose(ul);
 	}
 }

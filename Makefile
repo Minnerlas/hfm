@@ -8,6 +8,7 @@ OUT    = hfm
 TESTF  = test.txt
 
 test4: all
+	rm -f test.txt
 	./$(OUT) -x izlaz1.hfm
 
 test: all
