@@ -62,3 +62,10 @@ struct term_size get_term_size() {
 double map(double x, double xmin, double xmax, double min, double max) {
 	return (x - xmin)*(max - min)/(xmax - xmin) + min;
 }
+
+
+void putoctal(char *dst, unsigned long num, int size) {
+    if (snprintf(dst, size, "%.*lo", size - 1, num) >= size)
+        fprintf(stderr, "snprintf: input number too large\n");
+}
+

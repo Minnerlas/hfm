@@ -5,6 +5,7 @@
 
 #include <libgen.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "hfm.h"
 #include "fifo.h"
@@ -209,6 +210,8 @@ int main(int argc, char **argv) {
 				uint8_t c;
 				uint8_t buf = 0;
 				int buf_vel = 0;
+				struct stat st;
+				stat(ulaz, &st);
 				rewind(ul);
 				printf("\x1b[?25l");
 				/* HEADER */
@@ -216,9 +219,13 @@ int main(int argc, char **argv) {
 				h.magic[1] = HFM_MAGIC1;
 				h.magic[2] = HFM_MAGIC2;
 				h.magic[3] = HFM_MAGIC3;
-				snprintf(h.size, sizeof(h.size), "%.*lo",
-						(int)sizeof(h.size)-1, f_vel);
-				strncpy(h.name, basename(ulaz), sizeof(h.name));
+				h.ver[0] = h.ver[1] = 0;
+				putoctal(h.size,  f_vel,                     sizeof(h.size));
+				putoctal(h.mtime, (size_t)st.st_mtime,       sizeof(h.mtime));
+				putoctal(h.uid,   (size_t)st.st_uid,         sizeof(h.uid));
+				putoctal(h.gid,   (size_t)st.st_gid,         sizeof(h.gid));
+				putoctal(h.mode,  (size_t)st.st_mode & 0777, sizeof(h.gid));
+				strncpy(h.name,   basename(ulaz),            sizeof(h.name));
 				for (int i = 0; i < MAX_U8; i++)
 					h.weights[i] = bytes[i];
 
@@ -293,7 +300,7 @@ int main(int argc, char **argv) {
 			printf("ouk: %.3f\n", ukup/8.);
 			printf("ocr: %.3f%%\n", 100*(ukup/8.)/br_bajtova);
 
-			printf("uk:  %.3lu\n", napisano);
+			printf("uk:  %lu\n", napisano);
 			printf("cr:  %.3f%%\n", 100.*napisano/br_bajtova);
 
 			if (iz != stdout) {

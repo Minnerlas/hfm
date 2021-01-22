@@ -15,5 +15,6 @@ void bubble_sort(void **niz, size_t duz, size_t (*f)(void*));
 void progress_bar(const char *text, float progress, size_t width);
 struct term_size get_term_size();
 double map(double x, double xmin, double xmax, double min, double max);
+void putoctal(char *dst, unsigned long num, int size);
 
 #endif /* UTIL_H */
