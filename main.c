@@ -8,7 +8,6 @@
 #include <sys/stat.h>
 
 #include "hfm.h"
-#include "fifo.h"
 #include "util.h"
 
 #define BARSPLIT 33.
