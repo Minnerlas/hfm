@@ -140,8 +140,9 @@ int main(int argc, char **argv) {
 					// progress = br_bajtova*100./f_vel;
 					progress = map(t, 0, 1, 0, BARSPLIT);
 					if (ansi_term) {
-						progress_bar("Progress:", progress, term_width);
-						// progress_bar(ulaz, progress, term_width);
+						progress_bar(progress, term_width, 
+								"Progress: % 3d%%", progress);
+
 						fflush(stdout);
 					} else {
 						if (progress % 10 == 0)
@@ -257,8 +258,9 @@ int main(int argc, char **argv) {
 					   && (progress - (int)(map(t, 0, 1, BARSPLIT, 100)))) {
 					progress = map(t, 0, 1, BARSPLIT, 100);
 					if (ansi_term) {
-						progress_bar("Progress:", progress, term_width);
-						// progress_bar(ulaz, progress, term_width);
+						progress_bar(progress, term_width, 
+								"Progress: % 3d%%", progress);
+
 						fflush(stdout);
 					} else {
 						if (progress % 10 == 0)
@@ -465,8 +467,9 @@ int main(int argc, char **argv) {
 					   && (progress - (int)(map(t, 0, 1, 0, 100)))) {
 					progress = map(t, 0, 1, 0, 100);
 					if (ansi_term) {
-						progress_bar("Progress:", progress, term_width);
-						// progress_bar(ulaz, progress, term_width);
+						progress_bar(progress, term_width, 
+								"Progress: % 3d%%", progress);
+
 						fflush(stdout);
 					} else {
 						if (progress % 10 == 0)

@@ -23,9 +23,10 @@ void bubble_sort(void **niz, size_t duz, size_t (*f)(void*)) {
 	// printf("%d\n", i);
 }
 
-void progress_bar(const char *text, float progress, size_t width) {
+/* TODO: da li ostaviti ovo
+static void progress_bar2(const char *text, float progress, size_t width) {
 	int pr = 0;
-	printf("\x1b[1000D");
+	putchar('\r');
 	if ((pr = printf("%s% 4.f%% [", text, progress)) < 0)
 		return;
 	pr = width - pr-1;
@@ -35,6 +36,27 @@ void progress_bar(const char *text, float progress, size_t width) {
 		else
 			putchar(' ');
 	putchar(']');
+}
+*/
+
+void progress_bar(float progress, size_t width, const char *fmt, ...) {
+	int pr = 0, t = 0;
+	putchar('\r');
+	va_list ap;
+	va_start(ap, fmt);
+	if ((pr = vprintf(fmt, ap)) < 0)
+		return;
+	if ((t = printf(" [")) < 0)
+		return;
+	pr += t;
+	pr = width - pr-1;
+	for (int i = 0; i < pr; i++)
+		if (100.*i/pr < progress)
+			putchar('=');
+		else
+			putchar(' ');
+	putchar(']');
+	va_end(ap);
 }
 
 struct term_size get_term_size() {
