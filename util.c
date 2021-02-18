@@ -44,10 +44,14 @@ void progress_bar(float progress, size_t width, const char *fmt, ...) {
 	putchar('\r');
 	va_list ap;
 	va_start(ap, fmt);
-	if ((pr = vprintf(fmt, ap)) < 0)
+	if ((pr = vprintf(fmt, ap)) < 0) {
+		va_end(ap);
 		return;
-	if ((t = printf(" [")) < 0)
+	}
+	if ((t = printf(" [")) < 0) {
+		va_end(ap);
 		return;
+	}
 	pr += t;
 	pr = width - pr-1;
 	for (int i = 0; i < pr; i++)
